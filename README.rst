@@ -108,6 +108,5 @@ Examples
 --------
 
 
-
-
+python3 ct_covidnet/ct_covidnet.py --imagefile in/ex-covid-ct.png in out
 

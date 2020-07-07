@@ -7,6 +7,7 @@ import os
 import sys
 import cv2
 import json
+import shutil
 import numpy as np
 from math import ceil
 import tensorflow as tf
@@ -48,16 +49,19 @@ def create_session():
 
 class COVIDNetCTRunner:
     """Primary training/testing/inference class"""
-    def __init__(self, meta_file, ckpt=None, data_dir=None, input_height=224, input_width=224, max_bbox_jitter=0.025,
+    def __init__(self, inputdir, outputdir, meta_file, ckpt=None, data_dir=None, input_height=224, input_width=224, max_bbox_jitter=0.025,
                  max_rotation=10, max_shear=0.15, max_pixel_shift=10, max_pixel_scale_change=0.2):
         self.meta_file = meta_file
         self.ckpt = ckpt
         self.input_height = input_height
         self.input_width = input_width
         self.dataset = None
+        self.inputdir = inputdir
+        self.outputdir = outputdir
 
     def infer(self, image_file):
-        image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
+        imagePath = os.path.join(self.inputdir, image_file)
+        image = cv2.imread(imagePath, cv2.IMREAD_GRAYSCALE)
 
         image = cv2.resize(image, (self.input_width, self.input_height), cv2.INTER_CUBIC)
         image = image.astype(np.float32) / 255.0
@@ -74,9 +78,13 @@ class COVIDNetCTRunner:
 
             # Run image through model
             class_, probs = sess.run([CLASS_PRED_TENSOR, CLASS_PROB_TENSOR], feed_dict=feed_dict)
-            print('\nPredicted Class: ' + CLASS_NAMES[class_[0]])
-            print('Confidences:' + ', '.join(
-                '{}: {}'.format(name, conf) for name, conf in zip(CLASS_NAMES, probs[0])))
+            analysis = {
+                'prediction': CLASS_NAMES[class_[0]],
+                'Normal': str(probs[0][0]),
+                'Pneumonia': str(probs[0][1]),
+                'COVID-19': str(probs[0][2])
+            }
+            Output.generateOutput(self.inputdir, self.outputdir, image_file, analysis)
 
     def load_ckpt(self, sess, saver):
         """Helper for loading weights"""
@@ -97,23 +105,41 @@ class COVIDNetCTRunner:
             saver = tf.train.import_meta_graph(self.meta_file)
         return graph, sess, saver
 
+
+class Output:
+
+    @staticmethod
+    def generateOutput(inputdir, outputdir, imagefile, classification_data):
+        mode = 'default'
+        # creates the output directory if not exists
+        if not os.path.exists(outputdir):
+            os.makedirs(outputdir)
+
+        print(f"Creating prediction-default.json in {outputdir}...")
+        with open(f'{outputdir}/prediction-{mode}.json', 'w') as f:
+            json.dump(classification_data, f, indent=4)
+        
+        print(f"Copying over the input image to: {outputdir}...")
+        shutil.copy( os.path.join(inputdir, imagefile) , outputdir)
+
+
 class RunAnalysis:
 
-  @staticmethod
-  def run_analysis(args):
-    # Suppress most console output
-    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+    @staticmethod
+    def run_analysis(args):
+        # Suppress most console output
+        tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
-    meta_file = os.path.join(args.model_dir, args.meta_name)
-    ckpt = os.path.join(args.model_dir, args.ckpt_name)
+        meta_file = os.path.join(args.model_dir, args.meta_name)
+        ckpt = os.path.join(args.model_dir, args.ckpt_name)
 
-    augmentation_kwargs = {}
-    runner = COVIDNetCTRunner(
-        meta_file,
-        ckpt=ckpt,
-        input_height=args.input_height,
-        input_width=args.input_width,
-        **augmentation_kwargs # unpacks a dictionary into keyword arguments.
-    )
+        runner = COVIDNetCTRunner(
+            meta_file=meta_file,
+            ckpt=ckpt,
+            input_height=args.input_height,
+            input_width=args.input_width,
+            inputdir=args.inputdir,
+            outputdir=args.outputdir,
+        )
 
-    runner.infer(args.imagefile)
+        runner.infer(args.imagefile)
