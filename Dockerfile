@@ -23,16 +23,20 @@
 
 
 
-FROM fnndsc/ubuntu-python3:latest
+FROM fnndsc/ubuntu-python3:18.04
 MAINTAINER fnndsc "dev@babymri.org"
 
 ENV APPROOT="/usr/src/ct_covidnet"
+ENV DEBIAN_FRONTEND=noninteractive
 COPY ["ct_covidnet", "${APPROOT}"]
 COPY ["requirements.txt", "${APPROOT}"]
 
 WORKDIR $APPROOT
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN apt-get update \
+  && apt-get install -y libsm6 libxext6 libxrender-dev python-tk\
+  && pip install --upgrade pip \
+  && pip install -r requirements.txt
+
 
 CMD ["ct_covidnet.py", "--help"]

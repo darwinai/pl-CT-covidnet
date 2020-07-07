@@ -16,7 +16,7 @@ pl-CT-covidnet
 Abstract
 --------
 
-An app to ...
+An app to run COVID-Net CT modles on image files
 
 
 Synopsis
@@ -29,6 +29,7 @@ Synopsis
         [--version]                                                 \
         [--man]                                                     \
         [--meta]                                                    \
+        [--imagefile]                                               \
         <inputDir>
         <outputDir> 
 
@@ -54,32 +55,21 @@ Arguments
     [--meta]
     If specified, print plugin meta data.
 
+    [--imagefile]
+    required, name of the image file to be analyzed 
+
 
 Run
 ----
 
-This ``plugin`` can be run in two modes: natively as a python package or as a containerized docker image.
+This ``plugin`` can be run as a containerized docker image.
 
-Using PyPI
-~~~~~~~~~~
 
-To run from PyPI, simply do a 
+Build Docker image
+~~~~~~~~~~~~~~~~~~~~
 
-.. code:: bash
+docker build -t local/pl-ct-covidnet .
 
-    pip install ct_covidnet
-
-and run with
-
-.. code:: bash
-
-    ct_covidnet.py --man /tmp /tmp
-
-to get inline help. The app should also understand being called with only two positional arguments
-
-.. code:: bash
-
-    ct_covidnet.py /some/input/directory /destination/directory
 
 
 Using ``docker run``
@@ -91,22 +81,14 @@ Now, prefix all calls with
 
 .. code:: bash
 
-    docker run --rm -v $(pwd)/out:/outgoing                             \
-            fnndsc/pl-ct_covidnet ct_covidnet.py                        \
-
-Thus, getting inline help is:
-
-.. code:: bash
-
-    mkdir in out && chmod 777 out
     docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
             fnndsc/pl-ct_covidnet ct_covidnet.py                        \
-            --man                                                       \
+            --imagefile ex-covid-ct.png
             /incoming /outgoing
 
 Examples
 --------
 
 
-python3 ct_covidnet/ct_covidnet.py --imagefile in/ex-covid-ct.png in out
+python3 ct_covidnet/ct_covidnet.py --imagefile ex-covid-ct.png in out
 
