@@ -1,0 +1,35 @@
+{
+  "type": "ds",
+  "parameters": [
+    {
+      "name": "imagefile",
+      "type": "str",
+      "optional": false,
+      "flag": "--imagefile",
+      "short_flag": "--imagefile",
+      "action": "store",
+      "help": "Name of CT image file to infer from",
+      "default": null,
+      "ui_exposed": true
+    }
+  ],
+  "icon": "",
+  "authors": "DarwinAI (jeffer.peng@darwinai.ca)",
+  "title": "Plugin to run covidnet using CT images",
+  "category": "",
+  "description": "An app to ...",
+  "documentation": "http://wiki",
+  "license": "Opensource (MIT)",
+  "version": "0.1",
+  "selfpath": "/usr/src/ct_covidnet",
+  "selfexec": "ct_covidnet.py",
+  "execshell": "python3",
+  "max_number_of_workers": 1,
+  "min_number_of_workers": 1,
+  "max_memory_limit": "",
+  "min_memory_limit": "",
+  "max_cpu_limit": "",
+  "min_cpu_limit": "",
+  "max_gpu_limit": 0,
+  "min_gpu_limit": 0
+}

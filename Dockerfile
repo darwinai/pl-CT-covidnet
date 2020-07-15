@@ -34,7 +34,7 @@ COPY ["requirements.txt", "${APPROOT}"]
 WORKDIR $APPROOT
 
 RUN apt-get update \
-  && apt-get install -y libsm6 libxext6 libxrender-dev python-tk\
+  && apt-get install -y libsm6 libxext6 libxrender-dev python3-tk\
   && pip install --upgrade pip \
   && pip install -r requirements.txt
 

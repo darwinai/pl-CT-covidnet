@@ -12,7 +12,6 @@ import numpy as np
 from math import ceil
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 from data_utils import auto_body_crop
 

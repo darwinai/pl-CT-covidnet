@@ -82,7 +82,7 @@ Now, prefix all calls with
 .. code:: bash
 
     docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-            fnndsc/pl-ct_covidnet ct_covidnet.py                        \
+            local/pl-ct-covidnet ct_covidnet.py                        \
             --imagefile ex-covid-ct.png
             /incoming /outgoing
 
@@ -92,3 +92,4 @@ Examples
 
 python3 ct_covidnet/ct_covidnet.py --imagefile ex-covid-ct.png in out
 
+docker run --rm -v /json:/json local/pl-ct-covidnet ct_covidnet.py --savejson /json
