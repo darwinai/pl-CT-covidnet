@@ -145,7 +145,7 @@ class Ct_covidnet(ChrisApp):
         """
         print(Gstr_title)
         print('Version: %s' % self.get_version())
-        options.model_dir = 'ct_covidnet/models/COVIDNet-CT-A'
+        options.model_dir = os.path.join(os.getcwd(), 'models/COVIDNet-CT-A')
         options.meta_name = 'model.meta'
         options.ckpt_name = 'model'
         options.input_width = 512
