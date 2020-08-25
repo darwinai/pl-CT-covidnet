@@ -59,6 +59,21 @@ Arguments
     required, name of the image file to be analyzed 
 
 
+Setup
+----
+
+Download the pre-trained Machine learning model from: 
+https://drive.google.com/drive/folders/13Cb8yvAW0V_Hh-AvUEDrMEpwLhD3zv-F
+
+Make sure to download the COVIDNet-CT-A folder
+
+Then put the downloaded folders in ct_covidnet/models
+
+The folder structure should be:
+
+pl-covidnet/ct_covidnet/models/COVIDNet-CT-A
+
+
 Run
 ----
 
