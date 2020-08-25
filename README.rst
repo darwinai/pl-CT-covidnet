@@ -67,7 +67,7 @@ https://drive.google.com/drive/folders/13Cb8yvAW0V_Hh-AvUEDrMEpwLhD3zv-F
 
 Make sure to download the COVIDNet-CT-A folder
 
-Then put the downloaded folders in ct_covidnet/models
+Then put the downloaded folder in ct_covidnet/models
 
 The folder structure should be:
 
