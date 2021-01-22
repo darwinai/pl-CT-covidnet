@@ -16,7 +16,7 @@ pl-CT-covidnet
 Abstract
 --------
 
-An app to run COVID-Net CT modles on image files
+This ia an app to run COVID-Net CT models on image files.
 
 
 Synopsis
@@ -65,9 +65,7 @@ Setup
 Download the pre-trained Machine learning model from: 
 https://drive.google.com/drive/folders/13Cb8yvAW0V_Hh-AvUEDrMEpwLhD3zv-F
 
-Make sure to download the COVIDNet-CT-A folder
-
-Then put the downloaded folder in ct_covidnet/models
+Make sure to download the COVIDNet-CT-A folder and put it in ct_covidnet/models.
 
 The folder structure should be:
 
@@ -77,7 +75,7 @@ pl-covidnet/ct_covidnet/models/COVIDNet-CT-A
 Run
 ----
 
-This ``plugin`` can be run as a containerized docker image.
+This ``plugin`` can be run as a containerized Docker image.
 
 
 Build Docker image
@@ -90,9 +88,9 @@ docker build -t local/pl-ct-covidnet .
 Using ``docker run``
 ~~~~~~~~~~~~~~~~~~~~
 
-To run using ``docker``, be sure to assign an "input" directory to ``/incoming`` and an output directory to ``/outgoing``. *Make sure that the* ``$(pwd)/out`` *directory is world writable!*
+To run using ``docker``, be sure to assign an "input" directory to ``/incoming`` and an output directory to ``/outgoing``. *Make sure that the* ``$(pwd)/out`` *directory is world writable!*.
 
-Now, prefix all calls with 
+Prefix all calls with: 
 
 .. code:: bash
 
