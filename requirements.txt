@@ -24,7 +24,7 @@ scipy==1.2.3
 six==1.15.0
 subprocess32==3.5.4
 tensorboard==1.15.0
-tensorflow==1.14.0
+tensorflow==2.4.0
 tensorflow-estimator==1.15.1
 termcolor==1.1.0
 tk==0.1.0
