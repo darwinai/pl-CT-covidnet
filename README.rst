@@ -16,8 +16,7 @@ pl-CT-covidnet
 Abstract
 --------
 
-This ia an app to run COVID-Net CT models on image files.
-
+This ia an app to run COVID-Net CT models on chest CT images.
 
 Synopsis
 --------
@@ -36,7 +35,7 @@ Synopsis
 Description
 -----------
 
-``ct_covidnet.py`` is a ChRIS-based application that...
+``ct_covidnet.py`` is a ChRIS-based plugin for the COVIDNet-UI that performs classification of COVID-19 from chest CT images. More details on the implementation can be found on the paper, `COVIDNet-CT: A Tailored Deep Convolutional Neural Network Design for Detection of COVID-19 Cases from Chest CT Images <https://arxiv.org/abs/2009.05383>`_.
 
 Arguments
 ---------
