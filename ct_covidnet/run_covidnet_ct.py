@@ -1,19 +1,16 @@
-
 """
 Training/testing/inference script for COVIDNet-CT model for COVID-19 detection in CT images.
 """
 
-import os
-import sys
-import cv2
 import json
+import os
 import shutil
-import numpy as np
-from math import ceil
-import tensorflow as tf
-import matplotlib.pyplot as plt
 
-from data_utils import auto_body_crop
+import cv2
+import numpy as np
+import tensorflow as tf
+
+from ct_covidnet.data_utils import auto_body_crop
 
 # Dict keys
 TRAIN_OP_KEY = 'train_op'
@@ -38,6 +35,7 @@ OUTPUT_DIR = 'output'
 # Class names ordered by class index
 CLASS_NAMES = ('Normal', 'Pneumonia', 'COVID-19')
 
+
 def create_session():
     """Helper function for session creation"""
     config = tf.ConfigProto()
@@ -48,8 +46,19 @@ def create_session():
 
 class COVIDNetCTRunner:
     """Primary training/testing/inference class"""
-    def __init__(self, inputdir, outputdir, meta_file, ckpt=None, data_dir=None, input_height=224, input_width=224, max_bbox_jitter=0.025,
-                 max_rotation=10, max_shear=0.15, max_pixel_shift=10, max_pixel_scale_change=0.2):
+    def __init__(self,
+                 inputdir,
+                 outputdir,
+                 meta_file,
+                 ckpt=None,
+                 data_dir=None,
+                 input_height=224,
+                 input_width=224,
+                 max_bbox_jitter=0.025,
+                 max_rotation=10,
+                 max_shear=0.15,
+                 max_pixel_shift=10,
+                 max_pixel_scale_change=0.2):
         self.meta_file = meta_file
         self.ckpt = ckpt
         self.input_height = input_height
@@ -62,13 +71,15 @@ class COVIDNetCTRunner:
         imagePath = os.path.join(self.inputdir, image_file)
         image = cv2.imread(imagePath, cv2.IMREAD_GRAYSCALE)
 
-        image = cv2.resize(image, (self.input_width, self.input_height), cv2.INTER_CUBIC)
+        image = cv2.resize(image, (self.input_width, self.input_height),
+                           cv2.INTER_CUBIC)
         image = image.astype(np.float32) / 255.0
-        image = np.expand_dims(np.stack((image, image, image), axis=-1), axis=0)
+        image = np.expand_dims(np.stack((image, image, image), axis=-1),
+                               axis=0)
 
         # Create feed dict
         feed_dict = {IMAGE_INPUT_TENSOR: image, TRAINING_PH_TENSOR: False}
-        
+
         # Run inference
         graph, sess, saver = self.load_graph()
         with graph.as_default():
@@ -76,14 +87,16 @@ class COVIDNetCTRunner:
             self.load_ckpt(sess, saver)
 
             # Run image through model
-            class_, probs = sess.run([CLASS_PRED_TENSOR, CLASS_PROB_TENSOR], feed_dict=feed_dict)
+            class_, probs = sess.run([CLASS_PRED_TENSOR, CLASS_PROB_TENSOR],
+                                     feed_dict=feed_dict)
             analysis = {
                 'prediction': CLASS_NAMES[class_[0]],
                 'Normal': str(probs[0][0]),
                 'Pneumonia': str(probs[0][1]),
                 'COVID-19': str(probs[0][2])
             }
-            Output.generateOutput(self.inputdir, self.outputdir, image_file, analysis)
+            Output.generateOutput(self.inputdir, self.outputdir, image_file,
+                                  analysis)
 
     def load_ckpt(self, sess, saver):
         """Helper for loading weights"""
@@ -106,7 +119,6 @@ class COVIDNetCTRunner:
 
 
 class Output:
-
     @staticmethod
     def generateOutput(inputdir, outputdir, imagefile, classification_data):
         mode = 'default'
@@ -117,13 +129,12 @@ class Output:
         print(f"Creating prediction-default.json in {outputdir}...")
         with open(f'{outputdir}/prediction-{mode}.json', 'w') as f:
             json.dump(classification_data, f, indent=4)
-        
+
         print(f"Copying over the input image to: {outputdir}...")
-        shutil.copy( os.path.join(inputdir, imagefile) , outputdir)
+        shutil.copy(os.path.join(inputdir, imagefile), outputdir)
 
 
 class RunAnalysis:
-
     @staticmethod
     def run_analysis(args):
         # Suppress most console output

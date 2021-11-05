@@ -1,4 +1,4 @@
-#!/usr/bin/env python                                            
+#!/usr/bin/env python
 #
 # ct_covidnet ds ChRIS plugin app
 #
@@ -9,16 +9,12 @@
 #                        dev@babyMRI.org
 #
 
-
 import os
-import sys
-from run_covidnet_ct import RunAnalysis
-
-sys.path.append(os.path.dirname(__file__))
 
 # import the Chris app superclass
 from chrisapp.base import ChrisApp
 
+from ct_covidnet.run_covidnet_ct import RunAnalysis
 
 Gstr_title = """
 
@@ -92,28 +88,21 @@ where necessary.)
 
 class Ct_covidnet(ChrisApp):
     """
-    An app to ....
+    Plugin to ChRIS for CT-COVID-Net functionalities.
     """
-    AUTHORS                 = 'DarwinAI (jeffer.peng@darwinai.ca)'
-    SELFPATH                = os.path.dirname(os.path.abspath(__file__))
-    SELFEXEC                = os.path.basename(__file__)
-    EXECSHELL               = 'python3'
-    TITLE                   = 'Plugin to run covidnet using CT images'
-    CATEGORY                = ''
-    TYPE                    = 'ds'
-    DESCRIPTION             = 'An app to ...'
-    DOCUMENTATION           = 'http://wiki'
-    VERSION                 = '0.1'
-    ICON                    = '' # url of an icon image
-    LICENSE                 = 'AGPL 3.0'
-    MAX_NUMBER_OF_WORKERS   = 1  # Override with integer value
-    MIN_NUMBER_OF_WORKERS   = 1  # Override with integer value
-    MAX_CPU_LIMIT           = '' # Override with millicore value as string, e.g. '2000m'
-    MIN_CPU_LIMIT           = '' # Override with millicore value as string, e.g. '2000m'
-    MAX_MEMORY_LIMIT        = '' # Override with string, e.g. '1Gi', '2000Mi'
-    MIN_MEMORY_LIMIT        = '' # Override with string, e.g. '1Gi', '2000Mi'
-    MIN_GPU_LIMIT           = 0  # Override with the minimum number of GPUs, as an integer, for your plugin
-    MAX_GPU_LIMIT           = 0  # Override with the maximum number of GPUs, as an integer, for your plugin
+    PACKAGE = __package__
+    TITLE = 'COVID-Net inference for chest x-ray'
+    CATEGORY = ''
+    TYPE = 'ds'
+    ICON = ''  # url of an icon image
+    MAX_NUMBER_OF_WORKERS = 1  # Override with integer value
+    MIN_NUMBER_OF_WORKERS = 1  # Override with integer value
+    MAX_CPU_LIMIT = ''  # Override with millicore value as string, e.g. '2000m'
+    MIN_CPU_LIMIT = ''  # Override with millicore value as string, e.g. '2000m'
+    MAX_MEMORY_LIMIT = ''  # Override with string, e.g. '1Gi', '2000Mi'
+    MIN_MEMORY_LIMIT = '1Gi'  # Override with string, e.g. '1Gi', '2000Mi'
+    MIN_GPU_LIMIT = 0  # Override with the minimum number of GPUs, as an integer, for your plugin
+    MAX_GPU_LIMIT = 0  # Override with the maximum number of GPUs, as an integer, for your plugin
 
     # Use this dictionary structure to provide key-value output descriptive information
     # that may be useful for the next downstream plugin. For example:
@@ -133,11 +122,11 @@ class Ct_covidnet(ChrisApp):
         Define the CLI arguments accepted by this plugin app.
         Use self.add_argument to specify a new app argument.
         """
-        self.add_argument('--imagefile', 
-            dest         = 'imagefile', 
-            type         = str, 
-            optional     = False,
-            help         = 'Name of CT image file to infer from')
+        self.add_argument('--imagefile',
+                          dest='imagefile',
+                          type=str,
+                          optional=False,
+                          help='Name of CT image file to infer from')
 
     def run(self, options):
         """
@@ -145,13 +134,13 @@ class Ct_covidnet(ChrisApp):
         """
         print(Gstr_title)
         print('Version: %s' % self.get_version())
-        options.model_dir = os.path.join(os.getcwd(), 'models/COVIDNet-CT-A')
+        options.model_dir = os.path.join(
+            '/usr/local/lib/ct-covidnet/COVID-Net_CT-1_L')
         options.meta_name = 'model.meta'
         options.ckpt_name = 'model'
         options.input_width = 512
         options.input_height = 512
         RunAnalysis.run_analysis(options)
-
 
     def show_man_page(self):
         """
@@ -160,8 +149,6 @@ class Ct_covidnet(ChrisApp):
         print(Gstr_synopsis)
 
 
-# ENTRYPOINT
-if __name__ == "__main__":
-    chris_app = Ct_covidnet()
-    chris_app.launch()
-
+# chris app needs to write to files as outputs and taking inputs
+# output a dicom image then ChRIS user interface will be able to show it
+# csv, json, or custom html css files

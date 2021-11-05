@@ -16,7 +16,7 @@ pl-CT-covidnet
 Abstract
 --------
 
-A plugin to run COVID-Net CT models on chest CT images.
+This ia an app to run COVID-Net CT models on chest CT images.
 
 
 Synopsis
@@ -59,52 +59,25 @@ Arguments
     required, name of the image file to be analyzed 
 
 
-Setup
-----
+Models
+------
 
-Download the pre-trained Machine learning model from: 
-https://drive.google.com/drive/folders/13Cb8yvAW0V_Hh-AvUEDrMEpwLhD3zv-F
+The COVID-Net CT-1 L model is downloaded from
+https://github.com/haydengunraj/COVIDNet-CT/blob/master/docs/models.md
 
-Make sure to download the COVIDNet-CT-A folder
 
-Then put the downloaded folder in ct_covidnet/models
+Local Build
+-----------
 
-The folder structure should be:
+.. code:: bash
 
-pl-covidnet/ct_covidnet/models/COVIDNet-CT-A
-
+    DOCKER_BUILDKIT=1 docker build -t local/pl-ct-covidnet .
 
 Run
 ----
 
-This ``plugin`` can be run as a containerized docker image.
-
-
-Build Docker image
-~~~~~~~~~~~~~~~~~~~~
-
-docker build -t local/pl-ct-covidnet .
-
-
-
-Using ``docker run``
-~~~~~~~~~~~~~~~~~~~~
-
-To run using ``docker``, be sure to assign an "input" directory to ``/incoming`` and an output directory to ``/outgoing``. *Make sure that the* ``$(pwd)/out`` *directory is world writable!*
-
-Now, prefix all calls with 
-
 .. code:: bash
 
-    docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-            local/pl-ct-covidnet ct_covidnet.py                        \
-            --imagefile ex-covid-ct.png
-            /incoming /outgoing
-
-Examples
---------
-
-
-python3 ct_covidnet/ct_covidnet.py --imagefile ex-covid-ct.png in out
-
-docker run --rm -v /json:/json local/pl-ct-covidnet ct_covidnet.py --savejson /json
+    docker run --rm -v $PWD/in:/incoming -v $PWD/out:/outgoing    \
+        darwinai/covidnet-pl-ct ct-covidnet                          \
+            --imagefile ex-covid-ct.jpg /incoming /outgoing
