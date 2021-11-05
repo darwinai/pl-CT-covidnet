@@ -1,42 +1,33 @@
-# Docker file for ct_covidnet ChRIS plugin app
-#
-# Build with
-#
-#   docker build -t <name> .
-#
-# For example if building a local version, you could do:
-#
-#   docker build -t local/pl-CT-covidnet .
-#
-# In the case of a proxy (located at 192.168.13.14:3128), do:
-#
-#    docker build --build-arg http_proxy=http://192.168.13.14:3128 --build-arg UID=$UID -t local/pl-CT-covidnet .
-#
-# To run an interactive shell inside this container, do:
-#
-#   docker run -ti --entrypoint /bin/bash local/pl-CT-covidnet
-#
-# To pass an env var HOST_IP to container, do:
-#
-#   docker run -ti -e HOST_IP=$(ip route | grep -v docker | awk '{if(NF==11) print $9}') --entrypoint /bin/bash local/pl-CT-covidnet
-#
+FROM python:alpine as download
 
+# Download the relevant machine learning models whose results will be used as input
+# For example, for COVID-NET, download COVIDNet-CXR4-B from https://github.com/haydengunraj/COVIDNet-CT/blob/master/docs/models.md
+WORKDIR /tmp/models/COVID-Net_CT-1_L
+RUN pip install gdown \
+  && gdown "https://drive.google.com/uc?id=10WnXSqKOtoTMR57cqSm1vC5Ct3kT1TSZ" \
+  && gdown "https://drive.google.com/uc?id=1WDQoNRah1rZt_stfobGUopfx48ldW5eA" \
+  && gdown "https://drive.google.com/uc?id=1tHZmTqx006zE05x1TTaXksA_vnj79jvG" \
+  && gdown "https://drive.google.com/uc?id=11-HTVNBorqjg6mNEhwjvY4lgA7gYcHSd"
 
+FROM docker.io/fnndsc/tensorflow:1.15.3
 
-FROM fnndsc/ubuntu-python3:18.04
-MAINTAINER fnndsc "dev@babymri.org"
+LABEL org.opencontainers.image.authors="DarwinAI <support@darwinai.com>"
 
-ENV APPROOT="/usr/src/ct_covidnet"
 ENV DEBIAN_FRONTEND=noninteractive
-COPY ["ct_covidnet", "${APPROOT}"]
-COPY ["requirements.txt", "${APPROOT}"]
 
-WORKDIR $APPROOT
+COPY ["apt-requirements.txt", "requirements.txt", "./"]
 
 RUN apt-get update \
-  && apt-get install -y libsm6 libxext6 libxrender-dev python3-tk\
+  && xargs -d '\n' -a apt-requirements.txt apt-get install -y \
   && pip install --upgrade pip \
-  && pip install -r requirements.txt
+  && pip install -r requirements.txt \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -f requirements.txt apt-requirements.txt
 
+COPY --from=download /tmp/models /usr/local/lib/ct-covidnet
 
-CMD ["ct_covidnet.py", "--help"]
+WORKDIR /usr/local/src
+COPY . .
+RUN pip install .
+
+CMD ["ct-covidnet", "--help"]
