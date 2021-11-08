@@ -9,7 +9,7 @@ setup(
     name='ct_covidnet',
     # for best practices make this version the same as the VERSION class variable
     # defined in your ChrisApp-derived Python class
-    version='0.1',
+    version='1.1.0',
     description='Plugin to ChRIS for CT-covidnet functionalities',
     long_description=readme,
     author='DarwinAI',
